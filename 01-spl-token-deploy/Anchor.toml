@@ -1,15 +1,12 @@
-[toolchain]
-anchor_version = "0.31.1"
-
 [features]
 resolution = true
 skip-lint = false
 
 [programs.localnet]
-spl_token_deploy = "237gzJeQzJkTx9Zsb5zFAuJVjdCr5yetGtUDoikde53s"
+spl_token_deploy = "EEvyFEvz4q643xEKToyHSvgrKxMdXJ5YJHNsAQ4MbyMT"
 
 [programs.devnet]
-spl_token_deploy = "237gzJeQzJkTx9Zsb5zFAuJVjdCr5yetGtUDoikde53s"
+spl_token_deploy = "EEvyFEvz4q643xEKToyHSvgrKxMdXJ5YJHNsAQ4MbyMT"
 
 [registry]
 url = "https://api.apr.dev"

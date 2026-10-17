@@ -9,12 +9,16 @@ import {
 } from "@solana/spl-token";
 import { assert } from "chai";
 import { Crowdfunding } from "../target/types/crowdfunding";
+import { startAnchor } from "solana-bankrun";
+import { BankrunProvider } from "anchor-bankrun";
+
+const IDL = require("../target/idl/crowdfunding.json");
+const PROGRAM_ID = new PublicKey(IDL.address);
 
 describe("crowdfunding", () => {
-  const provider = anchor.AnchorProvider.env();
-  anchor.setProvider(provider);
-  const program = anchor.workspace.Crowdfunding as Program<Crowdfunding>;
-  const creator = provider.wallet as anchor.Wallet;
+  let provider: BankrunProvider;
+  let program: Program<Crowdfunding>;
+  let creator: anchor.Wallet;
 
   const decimals = 6;
   const goalHuman = 100;
@@ -27,6 +31,11 @@ describe("crowdfunding", () => {
   let creatorTokenAccount: PublicKey;
 
   before(async () => {
+    const context = await startAnchor("", [{ name: "crowdfunding", programId: PROGRAM_ID }], []);
+    provider = new BankrunProvider(context);
+    anchor.setProvider(provider as any);
+    program = new Program<Crowdfunding>(IDL as any, provider as any);
+    creator = provider.wallet as anchor.Wallet;
     tokenMint = await createMint(
       provider.connection,
       (provider.wallet as anchor.Wallet).payer,

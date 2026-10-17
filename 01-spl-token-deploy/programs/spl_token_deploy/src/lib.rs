@@ -8,7 +8,7 @@ use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount};
 
 // After your first `anchor build`, run `anchor keys list` and paste the real
 // program id here AND in Anchor.toml (or just run `anchor keys sync`).
-declare_id!("237gzJeQzJkTx9Zsb5zFAuJVjdCr5yetGtUDoikde53s");
+declare_id!("EEvyFEvz4q643xEKToyHSvgrKxMdXJ5YJHNsAQ4MbyMT");
 
 #[program]
 pub mod spl_token_deploy {

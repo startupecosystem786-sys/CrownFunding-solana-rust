@@ -50,7 +50,7 @@ async function main() {
       contribution,
       contributorTokenAccount,
       tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
-    })
+    } as any)
     .rpc();
 
   console.log("claim_refund tx:", sig);

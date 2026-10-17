@@ -56,7 +56,7 @@ async function main() {
       contributorTokenAccount,
       tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
       systemProgram: anchor.web3.SystemProgram.programId,
-    })
+    } as any)
     .rpc();
 
   console.log("contribute tx:", sig);

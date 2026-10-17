@@ -14,11 +14,11 @@ nft_mint = "AXfnZ45FUoVyzTZTNdkm6XG9QzwYjrfk7vomKEobuVXF"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = ".wallet/deployer.json"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+test = "yarn.cmd run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 
 # `anchor test` spins up a fresh local validator that only has the System/
 # Token/etc programs by default - the Metaplex Token Metadata program isn't

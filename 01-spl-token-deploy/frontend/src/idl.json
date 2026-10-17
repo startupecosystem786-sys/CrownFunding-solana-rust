@@ -1,0 +1,405 @@
+{
+  "address": "EEvyFEvz4q643xEKToyHSvgrKxMdXJ5YJHNsAQ4MbyMT",
+  "metadata": {
+    "name": "spl_token_deploy",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Lecture 1 - create and mint a custom SPL token with an Anchor program"
+  },
+  "instructions": [
+    {
+      "name": "create_token",
+      "docs": [
+        "Creates a brand new SPL token mint. The mint authority is a PDA",
+        "(\"mint_authority\") controlled by this program, not a raw wallet -",
+        "that's the whole point of doing this via Anchor instead of just",
+        "running `spl-token create-token` from the CLI: minting logic can now",
+        "be gated by whatever program rules you want."
+      ],
+      "discriminator": [
+        84,
+        52,
+        204,
+        228,
+        24,
+        140,
+        234,
+        75
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "docs": [
+            "The mint account itself. `admin` generates a fresh Keypair client-side",
+            "for this (see scripts/create-token.ts) and passes its pubkey in - it",
+            "is NOT a PDA, so Anchor just creates it as a normal account."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint_authority",
+          "docs": [
+            "PDA that becomes the mint's authority. Storing `admin` here is what",
+            "lets mint_to_wallet check \"is the caller allowed to mint more?\"."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata",
+          "docs": [
+            "deserialize it ourselves - the `create_metadata_accounts_v3` CPI",
+            "(owned by `token_metadata_program`) validates and initializes it. We",
+            "only need to prove *we* derived the same address Metaplex expects."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_metadata_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "token_metadata_program"
+            }
+          }
+        },
+        {
+          "name": "token_metadata_program",
+          "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "decimals",
+          "type": "u8"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "mint_to_wallet",
+      "docs": [
+        "Mints `amount` base units of the token to `recipient`'s associated",
+        "token account. Only the `admin` stored on the MintAuthority PDA",
+        "(set once in create_token) is allowed to call this."
+      ],
+      "discriminator": [
+        17,
+        40,
+        71,
+        107,
+        142,
+        232,
+        163,
+        100
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "mint_authority"
+          ]
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "relations": [
+            "mint_authority"
+          ]
+        },
+        {
+          "name": "mint_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient",
+          "docs": [
+            "The wallet that will own the tokens. Doesn't need to sign - anyone",
+            "can be minted to, only `admin` needs to authorize the mint itself.",
+            "is read from it."
+          ]
+        },
+        {
+          "name": "recipient_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "recipient"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "MintAuthority",
+      "discriminator": [
+        148,
+        0,
+        219,
+        228,
+        254,
+        237,
+        76,
+        128
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "ZeroAmount",
+      "msg": "Amount must be greater than zero"
+    },
+    {
+      "code": 6001,
+      "name": "NotAdmin",
+      "msg": "Only the admin who created this token can mint more of it"
+    },
+    {
+      "code": 6002,
+      "name": "NameTooLong",
+      "msg": "Name must be at most 32 characters (Metaplex's on-chain limit)"
+    },
+    {
+      "code": 6003,
+      "name": "SymbolTooLong",
+      "msg": "Symbol must be at most 10 characters (Metaplex's on-chain limit)"
+    },
+    {
+      "code": 6004,
+      "name": "UriTooLong",
+      "msg": "URI must be at most 200 characters (Metaplex's on-chain limit)"
+    }
+  ],
+  "types": [
+    {
+      "name": "MintAuthority",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}

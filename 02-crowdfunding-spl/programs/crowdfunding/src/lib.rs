@@ -10,7 +10,7 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 // campaign. It also adds a `claim_refund` instruction the original
 // contract didn't have - donors can get their money back if a campaign
 // expires without hitting its goal.
-declare_id!("6hafcYNa34it4syjPPy8yuQW5LfCmcxhm3D78h2qBA5r");
+declare_id!("Dz2ysREDsXtVENYJK27GgiJevKJmZk7LeMVnmvzvC38h");
 
 pub const SECONDS_PER_DAY: i64 = 86_400;
 
